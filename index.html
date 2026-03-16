@@ -1,655 +1,86 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>School Classes App</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style>
-      :root {
-        --bg: #050816;
-        --bg-alt: #0b1020;
-        --accent: #6366f1;
-        --accent-soft: rgba(99, 102, 241, 0.15);
-        --accent-strong: #a855f7;
-        --border-subtle: rgba(148, 163, 184, 0.35);
-        --text-main: #e5e7eb;
-        --text-muted: #9ca3af;
-        --danger: #f97373;
-        --radius-lg: 18px;
-        --radius-md: 12px;
-        --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.85);
-        --shadow-inner: 0 0 0 1px rgba(148, 163, 184, 0.18);
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-        min-height: 100vh;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-          sans-serif;
-        background: radial-gradient(circle at top, #1e293b 0, #020617 45%, #020617 100%);
-        color: var(--text-main);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 32px 16px;
-      }
-
-      .shell {
-        width: 100%;
-        max-width: 980px;
-        background: rgba(15, 23, 42, 0.92);
-        border-radius: 26px;
-        box-shadow: var(--shadow-soft);
-        border: 1px solid rgba(148, 163, 184, 0.45);
-        overflow: hidden;
-        backdrop-filter: blur(26px);
-      }
-
-      .shell-header {
-        display: flex;
-        align-items: center;
-        padding: 14px 18px;
-        border-bottom: 1px solid rgba(148, 163, 184, 0.35);
-        background: linear-gradient(
-          90deg,
-          rgba(15, 23, 42, 0.96),
-          rgba(15, 23, 42, 0.82)
-        );
-      }
-
-      .traffic-lights {
-        display: flex;
-        gap: 8px;
-        margin-right: 12px;
-      }
-
-      .dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 999px;
-      }
-
-      .dot.red {
-        background: #f97373;
-      }
-      .dot.amber {
-        background: #fbbf24;
-      }
-      .dot.green {
-        background: #22c55e;
-      }
-
-      .shell-title {
-        font-size: 14px;
-        color: var(--text-muted);
-      }
-
-      .content {
-        display: grid;
-        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.95fr);
-        gap: 2px;
-      }
-
-      @media (max-width: 800px) {
-        .content {
-          grid-template-columns: minmax(0, 1fr);
-        }
-      }
-
-      .pane {
-        padding: 22px 22px 24px;
-      }
-
-      .pane + .pane {
-        border-left: 1px solid rgba(15, 23, 42, 0.95);
-        background: radial-gradient(circle at top left, #020617 0, #020617 55%, #020617 100%);
-      }
-
-      @media (max-width: 800px) {
-        .pane + .pane {
-          border-left: none;
-          border-top: 1px solid rgba(15, 23, 42, 0.95);
-        }
-      }
-
-      .app-heading {
-        font-size: 26px;
-        letter-spacing: 0.03em;
-        margin: 0 0 4px;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .pill {
-        font-size: 11px;
-        padding: 4px 9px;
-        border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.4);
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.14em;
-      }
-
-      .subheading {
-        margin: 0 0 18px;
-        font-size: 14px;
-        color: var(--text-muted);
-        max-width: 460px;
-      }
-
-      .role-toggle {
-        display: inline-flex;
-        padding: 4px;
-        border-radius: 999px;
-        background: rgba(15, 23, 42, 0.9);
-        border: 1px solid rgba(148, 163, 184, 0.4);
-        box-shadow: var(--shadow-inner);
-        margin-bottom: 18px;
-      }
-
-      .role-btn {
-        border: none;
-        background: transparent;
-        color: var(--text-muted);
-        font-size: 13px;
-        padding: 6px 14px;
-        border-radius: 999px;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        transition: all 0.18s ease-out;
-        white-space: nowrap;
-      }
-
-      .role-btn span {
-        font-size: 11px;
-        opacity: 0.7;
-      }
-
-      .role-btn.active {
-        background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-        color: #eef2ff;
-        box-shadow: 0 10px 30px rgba(88, 101, 242, 0.7);
-      }
-
-      .role-btn.active span {
-        opacity: 1;
-      }
-
-      .badge-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 18px;
-      }
-
-      .badge {
-        font-size: 11px;
-        padding: 4px 9px;
-        border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.34);
-        color: var(--text-muted);
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .badge-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 999px;
-        background: var(--accent-strong);
-        box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.45);
-      }
-
-      .card {
-        border-radius: var(--radius-lg);
-        border: 1px solid var(--border-subtle);
-        background: radial-gradient(circle at top left, #020617 0, #020617 55%, #020617 100%);
-        padding: 16px 16px 14px;
-        box-shadow: 0 18px 50px rgba(15, 23, 42, 0.9);
-      }
-
-      .card-title-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px;
-        gap: 10px;
-      }
-
-      .card-title {
-        font-size: 14px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.16em;
-        color: var(--text-muted);
-      }
-
-      .card-indicator {
-        font-size: 11px;
-        color: var(--accent-strong);
-        text-transform: uppercase;
-        letter-spacing: 0.2em;
-      }
-
-      .divider {
-        height: 1px;
-        background: linear-gradient(
-          90deg,
-          rgba(15, 23, 42, 0),
-          rgba(148, 163, 184, 0.6),
-          rgba(15, 23, 42, 0)
-        );
-        margin: 10px 0 10px;
-      }
-
-      .form-row {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-bottom: 14px;
-      }
-
-      @media (min-width: 640px) {
-        .form-row--split {
-          flex-direction: row;
-        }
-      }
-
-      .field {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-      }
-
-      label {
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 0.14em;
-        color: var(--text-muted);
-      }
-
-      input,
-      select {
-        border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.5);
-        background: rgba(15, 23, 42, 0.9);
-        color: var(--text-main);
-        font-size: 14px;
-        padding: 8px 12px;
-        outline: none;
-        box-shadow: var(--shadow-inner);
-      }
-
-      input::placeholder {
-        color: rgba(148, 163, 184, 0.7);
-      }
-
-      button.primary {
-        border-radius: 999px;
-        border: none;
-        padding: 9px 16px;
-        background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-        color: #eef2ff;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        box-shadow: 0 16px 45px rgba(88, 101, 242, 0.7);
-      }
-
-      button.primary:active {
-        transform: translateY(1px);
-        box-shadow: 0 10px 28px rgba(88, 101, 242, 0.6);
-      }
-
-      .hint {
-        font-size: 12px;
-        color: var(--text-muted);
-        margin-top: 6px;
-      }
-
-      .hint strong {
-        color: #e5e7eb;
-      }
-
-      .classes-list {
-        margin-top: 12px;
-        max-height: 260px;
-        overflow: hidden;
-      }
-
-      .classes-list-inner {
-        border-radius: var(--radius-md);
-        border: 1px solid rgba(148, 163, 184, 0.4);
-        padding: 6px 8px;
-        background: radial-gradient(circle at top left, #020617 0, #020617 60%, #020617 100%);
-        max-height: 220px;
-        overflow-y: auto;
-      }
-
-      .class-row {
-        display: grid;
-        grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.8fr);
-        gap: 8px;
-        align-items: center;
-        padding: 7px 6px;
-        border-radius: 999px;
-        border: 1px solid transparent;
-      }
-
-      .class-row:nth-child(odd) {
-        background: rgba(15, 23, 42, 0.8);
-      }
-
-      .class-row:nth-child(even) {
-        background: rgba(15, 23, 42, 0.6);
-      }
-
-      .class-name {
-        font-size: 13px;
-        font-weight: 500;
-      }
-
-      .class-year-pill {
-        justify-self: end;
-        font-size: 11px;
-        padding: 4px 10px;
-        border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.6);
-        color: var(--text-muted);
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .year-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 999px;
-        background: #22c55e;
-        box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.35);
-      }
-
-      .section-title {
-        font-size: 13px;
-        text-transform: uppercase;
-        letter-spacing: 0.16em;
-        color: var(--text-muted);
-        margin-bottom: 10px;
-      }
-
-      .empty-state {
-        font-size: 13px;
-        color: var(--text-muted);
-        padding: 10px 4px 4px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="shell">
-      <div class="shell-header">
-        <div class="traffic-lights">
-          <div class="dot red"></div>
-          <div class="dot amber"></div>
-          <div class="dot green"></div>
-        </div>
-        <div class="shell-title">School Classes • browser app</div>
-      </div>
-      <div class="content">
-        <div class="pane">
-          <h1 class="app-heading">
-            School Classes
-            <span class="pill">Demo – No real login</span>
-          </h1>
-          <p class="subheading">
-            A tiny app where the admin can create classes and the students can see
-            which classes are available in which year.
-          </p>
-
-          <div class="role-toggle" id="roleToggle">
-            <button class="role-btn active" data-role="admin">
-              Admin
-              <span>Manage classes</span>
-            </button>
-            <button class="role-btn" data-role="student">
-              Student
-              <span>View timetable</span>
-            </button>
-          </div>
-
-          <div class="badge-row">
-            <div class="badge">
-              <span class="badge-dot"></span>
-              In-browser only – no backend
-            </div>
-            <div class="badge">Changes are saved per browser</div>
-            <div class="badge">Switch role above to preview</div>
-          </div>
-
-          <div class="card" id="adminView">
-            <div class="card-title-row">
-              <div class="card-title">Admin Panel</div>
-              <div class="card-indicator">Create classes</div>
-            </div>
-            <div class="divider"></div>
-
-            <form id="classForm" autocomplete="off">
-              <div class="form-row form-row--split">
-                <div class="field">
-                  <label for="className">Class name</label>
-                  <input
-                    id="className"
-                    name="className"
-                    type="text"
-                    placeholder="e.g. Mathematics I"
-                    required
-                  />
-                </div>
-                <div class="field">
-                  <label for="classYear">Year offered</label>
-                  <select id="classYear" name="classYear" required>
-                    <option value="" disabled selected>Select year</option>
-                    <option value="Year 1">Year 1</option>
-                    <option value="Year 2">Year 2</option>
-                    <option value="Year 3">Year 3</option>
-                    <option value="Year 4">Year 4</option>
-                    <option value="Year 5">Year 5</option>
-                    <option value="Year 6">Year 6</option>
-                  </select>
-                </div>
-              </div>
-
-              <button type="submit" class="primary">
-                + Add class
-              </button>
-              <div class="hint">
-                <strong>Tip:</strong> This demo stores classes in your browser only
-                (localStorage). In a real app this would connect to a backend and a
-                proper login system.
-              </div>
-            </form>
-
-            <div class="classes-list">
-              <div class="section-title">All classes</div>
-              <div class="classes-list-inner" id="adminClassesContainer"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="pane">
-          <div class="card" id="studentView">
-            <div class="card-title-row">
-              <div class="card-title">Student View</div>
-              <div class="card-indicator">Read only</div>
-            </div>
-            <div class="divider"></div>
-
-            <div class="field" style="margin-bottom: 10px">
-              <label for="studentYear">Filter by year</label>
-              <select id="studentYear">
-                <option value="all" selected>All years</option>
-                <option value="Year 1">Year 1</option>
-                <option value="Year 2">Year 2</option>
-                <option value="Year 3">Year 3</option>
-                <option value="Year 4">Year 4</option>
-                <option value="Year 5">Year 5</option>
-                <option value="Year 6">Year 6</option>
-              </select>
-            </div>
-
-            <div class="classes-list">
-              <div class="section-title" id="studentSectionTitle">
-                All classes offered
-              </div>
-              <div class="classes-list-inner" id="studentClassesContainer"></div>
-            </div>
-
-            <div class="hint">
-              Students can only <strong>view</strong> classes and the year each
-              class is offered. They cannot edit or delete anything.
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <script>
-      const STORAGE_KEY = "school-classes-demo";
-
-      function loadClasses() {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY);
-          if (!raw) return [];
-          const parsed = JSON.parse(raw);
-          if (!Array.isArray(parsed)) return [];
-          return parsed;
-        } catch (e) {
-          console.error("Failed to read classes", e);
-          return [];
-        }
-      }
-
-      function saveClasses(classes) {
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(classes));
-        } catch (e) {
-          console.error("Failed to save classes", e);
-        }
-      }
-
-      function renderClasses(listEl, classes, { showEmptyMessage }) {
-        listEl.innerHTML = "";
-        if (!classes.length) {
-          if (showEmptyMessage) {
-            const empty = document.createElement("div");
-            empty.className = "empty-state";
-            empty.textContent = "No classes yet.";
-            listEl.appendChild(empty);
-          }
-          return;
-        }
-
-        classes.forEach((cls) => {
-          const row = document.createElement("div");
-          row.className = "class-row";
-
-          const name = document.createElement("div");
-          name.className = "class-name";
-          name.textContent = cls.name;
-
-          const year = document.createElement("div");
-          year.className = "class-year-pill";
-          year.innerHTML = '<span class="year-dot"></span>' + cls.year;
-
-          row.appendChild(name);
-          row.appendChild(year);
-          listEl.appendChild(row);
-        });
-      }
-
-      const classForm = document.getElementById("classForm");
-      const classNameInput = document.getElementById("className");
-      const classYearSelect = document.getElementById("classYear");
-      const adminClassesContainer = document.getElementById(
-        "adminClassesContainer"
-      );
-      const studentClassesContainer = document.getElementById(
-        "studentClassesContainer"
-      );
-      const studentYearSelect = document.getElementById("studentYear");
-      const studentSectionTitle = document.getElementById("studentSectionTitle");
-      const roleToggle = document.getElementById("roleToggle");
-      const adminView = document.getElementById("adminView");
-      const studentView = document.getElementById("studentView");
-
-      let classes = loadClasses();
-
-      function refreshAllViews() {
-        renderClasses(adminClassesContainer, classes, {
-          showEmptyMessage: true,
-        });
-        applyStudentFilter();
-      }
-
-      function applyStudentFilter() {
-        const selected = studentYearSelect.value;
-        let filtered = classes;
-        if (selected !== "all") {
-          filtered = classes.filter((cls) => cls.year === selected);
-          studentSectionTitle.textContent =
-            filtered.length === 0
-              ? "No classes found for " + selected
-              : "Classes offered in " + selected;
-        } else {
-          studentSectionTitle.textContent = "All classes offered";
-        }
-
-        renderClasses(studentClassesContainer, filtered, {
-          showEmptyMessage: true,
-        });
-      }
-
-      classForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const name = classNameInput.value.trim();
-        const year = classYearSelect.value;
-        if (!name || !year) return;
-
-        classes.push({ name, year });
-        saveClasses(classes);
-        refreshAllViews();
-        classForm.reset();
-      });
-
-      studentYearSelect.addEventListener("change", applyStudentFilter);
-
-      roleToggle.addEventListener("click", (e) => {
-        const btn = e.target.closest(".role-btn");
-        if (!btn) return;
-        const role = btn.dataset.role;
-
-        roleToggle.querySelectorAll(".role-btn").forEach((b) => {
-          b.classList.toggle("active", b === btn);
-        });
-
-        const asAdmin = role === "admin";
-        adminView.style.display = asAdmin ? "block" : "none";
-        studentView.style.display = asAdmin ? "none" : "block";
-      });
-
-      refreshAllViews();
-    </script>
-  </body>
-  </html>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.4">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Helvetica Neue'; color: #dfe1e6; -webkit-text-stroke: #dfe1e6; background-color: #f55b60; min-height: 15.0px}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Helvetica Neue'; color: #dfe1e6; -webkit-text-stroke: #dfe1e6; background-color: #f9b31d; min-height: 15.0px}
+    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Helvetica Neue'; color: #dfe1e6; -webkit-text-stroke: #dfe1e6; background-color: #25bd4c; min-height: 15.0px}
+    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px 'Helvetica Neue'; color: #8a929f; -webkit-text-stroke: #8a929f}
+    p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 26.0px 'Helvetica Neue'; color: #dfe1e6; -webkit-text-stroke: #dfe1e6}
+    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px 'Helvetica Neue'; color: #8a929f; -webkit-text-stroke: #8a929f}
+    p.p7 {margin: 0.0px 0.0px 18.0px 0.0px; font: 14.0px 'Helvetica Neue'; color: #8a929f; -webkit-text-stroke: #8a929f}
+    p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Helvetica Neue'; color: #eaeeff; -webkit-text-stroke: #eaeeff}
+    p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 11.0px 'Helvetica Neue'; color: #eaeeff; -webkit-text-stroke: #eaeeff}
+    p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Helvetica Neue'; color: #8a929f; -webkit-text-stroke: #8a929f}
+    p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; text-align: center; font: 11.0px 'Helvetica Neue'; color: #8a929f; -webkit-text-stroke: #8a929f}
+    p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px 'Helvetica Neue'; color: #8a929f; -webkit-text-stroke: #8a929f; background-color: #9533f5; min-height: 13.0px}
+    p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 11.0px 'Helvetica Neue'; color: #9533f5; -webkit-text-stroke: #9533f5}
+    p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Helvetica Neue'; color: #dfe1e6; -webkit-text-stroke: #dfe1e6; min-height: 15.0px}
+    p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Helvetica Neue'; color: #8a929f; -webkit-text-stroke: #8a929f}
+    p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px 'Helvetica Neue'; color: #dfe1e6; -webkit-text-stroke: #dfe1e6; background-color: #0d121f; background-color: rgba(13, 18, 31, 0.9); min-height: 17.0px}
+    p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Helvetica Neue'; color: #8a929f; -webkit-text-stroke: #8a929f; background-color: #0d121f; background-color: rgba(13, 18, 31, 0.92)}
+    p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px 'Helvetica Neue'; color: #dfe1e6; -webkit-text-stroke: #dfe1e6; background-color: #0d121f; background-color: rgba(13, 18, 31, 0.9)}
+    p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px 'Helvetica Neue'; color: #eaeeff; -webkit-text-stroke: #eaeeff}
+    span.s1 {font-kerning: none}
+    span.s2 {font-kerning: none; background-color: rgba(13, 18, 31, 0.92)}
+    span.s3 {font-kerning: none; background-color: rgba(13, 18, 31, 0.9)}
+    span.s4 {font: 12.0px 'Helvetica Neue'; font-kerning: none; color: #dfe1e6; background-color: rgba(13, 18, 31, 0.92); -webkit-text-stroke: 0px #dfe1e6}
+    span.s5 {font: 14.0px Times; font-kerning: none; color: rgba(0, 0, 0, 0.25); -webkit-text-stroke: 0px rgba(0, 0, 0, 0.25)}
+    span.s6 {font: 14.0px Times; font-kerning: none}
+    span.s7 {font-kerning: none; color: #dfe1e6; background-color: rgba(13, 18, 31, 0.92); -webkit-text-stroke: 0px #dfe1e6}
+  </style>
+</head>
+<body>
+<p class="p1"><span class="s1"></span><br></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"></span><br></p>
+<p class="p4"><span class="s2">School Classes • browser app</span></p>
+<p class="p5"><span class="s2"><b>School<span class="Apple-converted-space">  </span>Classes</b><b></b></span></p>
+<p class="p6"><span class="s2"><b>DEMO – NO REAL LOGIN</b><b></b></span></p>
+<p class="p7"><span class="s2">A tiny app where the admin can create classes and the students can see which classes are available in which year.</span></p>
+<p class="p8"><span class="s3">Admin</span></p>
+<p class="p9"><span class="s3">Manage classes</span></p>
+<p class="p10"><span class="s3">Student</span></p>
+<p class="p11"><span class="s3">View timetable</span></p>
+<p class="p12"><span class="s1"></span><br></p>
+<p class="p6"><span class="s2">In-browser only – no backend Changes are saved per browser</span><span class="s4"> </span><span class="s2">Switch role above to preview</span></p>
+<p class="p4"><span class="s2">ADMIN PANEL</span></p>
+<p class="p13"><span class="s2">CREATE CLASSES</span></p>
+<p class="p14"><span class="s1"></span><br></p>
+<p class="p15"><span class="s2">CLASS NAME</span></p>
+<p class="p16"><span class="s1"></span><br></p>
+<p class="p17"><span class="s1">YEAR OFFERED</span></p>
+<p class="p18"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s5">Select year</span></p>
+<p class="p18"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s6">Year 1</span></p>
+<p class="p18"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s6">Year 2</span></p>
+<p class="p18"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s6">Year 3</span></p>
+<p class="p18"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s6">Year 4</span></p>
+<p class="p18"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s6">Year 5</span></p>
+<p class="p18"><span class="s1"><span class="Apple-converted-space">                    </span></span><span class="s6">Year 6</span></p>
+<p class="p16"><span class="s1"><span class="Apple-converted-space">                  </span></span></p>
+<p class="p19"><span class="s2">+ Add class</span></p>
+<p class="p15"><span class="s7"><b>Tip:</b></span><span class="s2"> This demo stores classes in your browser only (localStorage). In a real app this would connect to a backend and a proper login system.</span></p>
+<p class="p10"><span class="s2">ALL CLASSES</span></p>
+<p class="p14"><span class="s1"></span><br></p>
+<p class="p4"><span class="s2">STUDENT<span class="Apple-converted-space">  </span>VIEW</span></p>
+<p class="p13"><span class="s2">READ ONLY</span></p>
+<p class="p14"><span class="s1"></span><br></p>
+<p class="p17"><span class="s1">FILTER BY YEAR</span></p>
+<p class="p18"><span class="s1"><span class="Apple-converted-space">                </span></span><span class="s6">All years</span></p>
+<p class="p18"><span class="s1"><span class="Apple-converted-space">                </span></span><span class="s6">Year 1</span></p>
+<p class="p18"><span class="s1"><span class="Apple-converted-space">                </span></span><span class="s6">Year 2</span></p>
+<p class="p18"><span class="s1"><span class="Apple-converted-space">                </span></span><span class="s6">Year 3</span></p>
+<p class="p18"><span class="s1"><span class="Apple-converted-space">                </span></span><span class="s6">Year 4</span></p>
+<p class="p18"><span class="s1"><span class="Apple-converted-space">                </span></span><span class="s6">Year 5</span></p>
+<p class="p18"><span class="s1"><span class="Apple-converted-space">                </span></span><span class="s6">Year 6</span></p>
+<p class="p16"><span class="s1"><span class="Apple-converted-space">              </span></span></p>
+<p class="p10"><span class="s2">ALL CLASSES OFFERED</span></p>
+<p class="p14"><span class="s1"></span><br></p>
+<p class="p15"><span class="s2">Students can only </span><span class="s7"><b>view</b></span><span class="s2"> classes and the year each class is offered. They cannot edit or delete anything.</span></p>
+</body>
+</html>
