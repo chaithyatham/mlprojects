@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Admin — Fundraiser Requests{% endblock %}
+{% block content %}
+<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+  <div>
+    <h1>Admin Panel</h1>
+    <p class="subtitle" style="margin-bottom:0;">Review and approve fundraising requests.</p>
+  </div>
+  <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+    {% for f, label in [('all','All'), ('pending','Pending'), ('approved','Approved'), ('denied','Denied')] %}
+    <a href="/admin?filter={{ f }}"
+       class="btn btn-sm {{ 'btn-primary' if filter == f else 'btn-outline' }}">
+      {{ label }} <span style="opacity:.7;">({{ counts[f] }})</span>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+
+{% if rows %}
+  {% for r in rows %}
+  <div class="card" style="margin-bottom:1.25rem;">
+    <div style="display:flex; gap:1rem; align-items:flex-start;">
+      {% if r['photo'] %}
+      <img src="/static/uploads/{{ r['photo'] }}" alt="photo"
+           style="width:80px; height:80px; object-fit:cover; border-radius:8px; flex-shrink:0;">
+      {% else %}
+      <div style="width:80px; height:80px; background:#e5e7eb; border-radius:8px; flex-shrink:0;
+                  display:flex; align-items:center; justify-content:center; font-size:2rem;">🌱</div>
+      {% endif %}
+
+      <div style="flex:1; min-width:0;">
+        <div style="display:flex; align-items:center; gap:.75rem; flex-wrap:wrap; margin-bottom:.4rem;">
+          <strong style="font-size:1.05rem;">{{ r['name'] }}</strong>
+          <span class="badge badge-{{ r['status'] }}">{{ r['status'].upper() }}</span>
+          <span style="color:#9ca3af; font-size:.8rem;">{{ r['created'][:16] }}</span>
+        </div>
+        <p style="font-size:.85rem; color:#6b7280; margin-bottom:.4rem;">{{ r['email'] }}</p>
+        <p style="color:#374151; font-size:.9rem; margin-bottom:.5rem;">{{ r['cause'] }}</p>
+        <p style="font-size:.9rem;">Goal: <strong>${{ "%.0f"|format(r['goal']) }}</strong></p>
+
+        {% if r['note'] %}
+        <p style="margin-top:.6rem; font-size:.85rem; background:#f5f7fa; padding:.5rem .75rem; border-radius:6px;">
+          <strong>Note:</strong> {{ r['note'] }}
+        </p>
+        {% endif %}
+
+        {% if r['status'] == 'pending' %}
+        <hr class="divider">
+        <form method="POST" action="/admin/action/{{ r['id'] }}?filter={{ filter }}"
+              style="display:flex; gap:.75rem; align-items:flex-end; flex-wrap:wrap;">
+          <div style="flex:1; min-width:200px;">
+            <label style="font-size:.8rem;">Note to applicant (optional)</label>
+            <input type="text" name="note" placeholder="e.g. More info needed, Congratulations!…">
+          </div>
+          <button name="action" value="approved" class="btn btn-success btn-sm">✓ Approve</button>
+          <button name="action" value="denied"   class="btn btn-danger  btn-sm">✗ Deny</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="card" style="text-align:center; padding:2.5rem; color:#6b7280;">
+    No {{ '' if filter == 'all' else filter }} requests yet.
+  </div>
+{% endif %}
+{% endblock %}

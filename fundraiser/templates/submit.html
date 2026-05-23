@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Submit a Fundraising Request{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>Start a Fundraiser</h1>
+  <p class="subtitle">Tell us about your cause and we'll review your request.</p>
+
+  <form method="POST" enctype="multipart/form-data">
+    <div class="field">
+      <label>Your Name</label>
+      <input type="text" name="name" value="{{ form.get('name','') }}" placeholder="Jane Smith" required>
+    </div>
+
+    <div class="field">
+      <label>Email Address</label>
+      <input type="email" name="email" value="{{ form.get('email','') }}" placeholder="jane@example.com" required>
+      <p style="font-size:.8rem;color:#6b7280;margin-top:.3rem;">Used to check your request status.</p>
+    </div>
+
+    <div class="field">
+      <label>Your Cause / Story</label>
+      <textarea name="cause" placeholder="Tell us what you're raising funds for and why it matters…" required>{{ form.get('cause','') }}</textarea>
+    </div>
+
+    <div class="field">
+      <label>Fundraising Goal ($)</label>
+      <input type="number" name="goal" value="{{ form.get('goal','') }}" placeholder="5000" min="1" step="any" required>
+    </div>
+
+    <div class="field">
+      <label>Photo <span style="color:#6b7280;font-weight:400;">(optional)</span></label>
+      <input type="file" name="photo" accept="image/*" style="padding:.5rem 0;">
+    </div>
+
+    <hr class="divider">
+    <button type="submit" class="btn btn-primary">Submit Request →</button>
+  </form>
+</div>
+{% endblock %}

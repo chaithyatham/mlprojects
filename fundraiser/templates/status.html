@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Check Request Status{% endblock %}
+{% block content %}
+<div class="card" style="margin-bottom:1.5rem;">
+  <h1>Check Your Status</h1>
+  <p class="subtitle">Enter the email you used when submitting your request.</p>
+
+  <form method="POST" style="display:flex; gap:.75rem; align-items:flex-end;">
+    <div class="field" style="flex:1; margin-bottom:0;">
+      <label>Email Address</label>
+      <input type="email" name="email" value="{{ email }}" placeholder="jane@example.com" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Look Up</button>
+  </form>
+</div>
+
+{% if results is not none %}
+  {% if results %}
+    {% for r in results %}
+    <div class="card" style="margin-bottom:1rem;">
+      <div style="display:flex; align-items:flex-start; gap:1rem;">
+        {% if r['photo'] %}
+        <img src="/static/uploads/{{ r['photo'] }}" alt="photo"
+             style="width:72px; height:72px; object-fit:cover; border-radius:8px; flex-shrink:0;">
+        {% else %}
+        <div style="width:72px; height:72px; background:#e5e7eb; border-radius:8px; flex-shrink:0;
+                    display:flex; align-items:center; justify-content:center; font-size:1.8rem;">🌱</div>
+        {% endif %}
+        <div style="flex:1; min-width:0;">
+          <div style="display:flex; align-items:center; gap:.75rem; margin-bottom:.4rem; flex-wrap:wrap;">
+            <strong>{{ r['name'] }}</strong>
+            <span class="badge badge-{{ r['status'] }}">{{ r['status'].upper() }}</span>
+            <span style="color:#9ca3af; font-size:.8rem; margin-left:auto;">{{ r['created'][:10] }}</span>
+          </div>
+          <p style="color:#374151; font-size:.9rem; margin-bottom:.5rem;">{{ r['cause'][:200] }}{% if r['cause']|length > 200 %}…{% endif %}</p>
+          <p style="font-size:.85rem; color:#6b7280;">Goal: <strong style="color:#1a1a2e;">${{ "%.0f"|format(r['goal']) }}</strong></p>
+          {% if r['note'] %}
+          <p style="margin-top:.6rem; font-size:.85rem; background:#f5f7fa; padding:.5rem .75rem; border-radius:6px; color:#374151;">
+            <strong>Note from reviewer:</strong> {{ r['note'] }}
+          </p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="card" style="text-align:center; padding:2rem; color:#6b7280;">
+      No requests found for <strong>{{ email }}</strong>. Double-check your email or
+      <a href="/submit" style="color:#4f46e5;">submit a new request</a>.
+    </div>
+  {% endif %}
+{% endif %}
+{% endblock %}

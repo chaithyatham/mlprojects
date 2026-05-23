@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}FundraiseHub — Home{% endblock %}
+{% block content %}
+<div style="text-align:center; padding: 3rem 0 2rem;">
+  <div style="font-size:3rem; margin-bottom:1rem;">🌱</div>
+  <h1 style="font-size:2.2rem; margin-bottom:.75rem;">Community Fundraising</h1>
+  <p class="subtitle" style="font-size:1.1rem; max-width:480px; margin:0 auto 2.5rem;">
+    Submit a fundraising request for your cause. Once approved, we'll help spread the word.
+  </p>
+  <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+    <a href="/submit" class="btn btn-primary" style="font-size:1rem; padding:.75rem 2rem;">
+      🚀 Start a Fundraiser
+    </a>
+    <a href="/status" class="btn btn-outline" style="font-size:1rem; padding:.75rem 2rem;">
+      🔍 Check My Status
+    </a>
+  </div>
+</div>
+
+<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.25rem; margin-top:2rem;">
+  <div class="card" style="text-align:center; padding:1.5rem;">
+    <div style="font-size:2rem; margin-bottom:.5rem;">📝</div>
+    <h2 style="font-size:1rem;">Submit</h2>
+    <p style="color:#6b7280; font-size:.88rem; margin-top:.4rem;">Fill out the request form with your story and goal.</p>
+  </div>
+  <div class="card" style="text-align:center; padding:1.5rem;">
+    <div style="font-size:2rem; margin-bottom:.5rem;">✅</div>
+    <h2 style="font-size:1rem;">Get Approved</h2>
+    <p style="color:#6b7280; font-size:.88rem; margin-top:.4rem;">Our team reviews and approves your campaign.</p>
+  </div>
+  <div class="card" style="text-align:center; padding:1.5rem;">
+    <div style="font-size:2rem; margin-bottom:.5rem;">📣</div>
+    <h2 style="font-size:1rem;">Go Live</h2>
+    <p style="color:#6b7280; font-size:.88rem; margin-top:.4rem;">Your fundraiser is shared and starts collecting donations.</p>
+  </div>
+</div>
+{% endblock %}
