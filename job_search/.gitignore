@@ -1,0 +1,10 @@
+.env
+resume.md
+config.yaml
+target_companies.yaml
+data/
+uploads/
+__pycache__/
+agent/__pycache__/
+tests/__pycache__/
+

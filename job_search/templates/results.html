@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PM Startup Job Finder — Results</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { background: #0a0e1a; color: #e2e8f0; font-family: 'Segoe UI', system-ui, sans-serif; }
+
+    .topbar { background: #111827; border-bottom: 1px solid #1e2d45; padding: 14px 0; }
+    .topbar a { color: #60a5fa; text-decoration: none; font-weight: 600; }
+
+    .profile-card {
+      background: linear-gradient(135deg, #111827, #0f172a);
+      border: 1px solid #1e2d45; border-radius: 16px; padding: 28px 32px; margin: 32px 0 24px;
+    }
+    .profile-name { font-size: 1.6rem; font-weight: 800; }
+    .profile-meta { color: #94a3b8; margin-top: 4px; }
+    .skill-tag { display: inline-block; background: #1e3a5f; color: #60a5fa; font-size: 0.78rem; padding: 3px 10px; border-radius: 20px; margin: 3px; }
+    .vc-tag { display: inline-block; background: #1e2d45; color: #94a3b8; font-size: 0.75rem; padding: 3px 10px; border-radius: 20px; margin: 3px; }
+    .stage-tag { display: inline-block; background: rgba(52,211,153,0.12); color: #34d399; font-size: 0.75rem; padding: 3px 10px; border-radius: 20px; margin: 3px; }
+
+    .results-header { margin-bottom: 16px; }
+    .results-header h2 { font-size: 1.4rem; font-weight: 700; }
+
+    .filter-bar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+    .filter-bar input, .filter-bar select {
+      background: #111827; border: 1px solid #334155; color: #e2e8f0;
+      border-radius: 8px; padding: 8px 14px; font-size: 0.9rem;
+    }
+    .filter-bar input::placeholder { color: #64748b; }
+    .filter-bar input:focus, .filter-bar select:focus { border-color: #3b82f6; outline: none; }
+    .filter-bar select option { background: #111827; }
+
+    .job-card {
+      background: #111827; border: 1px solid #1e2d45; border-radius: 14px;
+      padding: 22px 24px; margin-bottom: 14px; transition: all 0.2s;
+      display: flex; align-items: flex-start; gap: 18px;
+    }
+    .job-card:hover { border-color: #334155; box-shadow: 0 4px 20px rgba(0,0,0,0.4); transform: translateY(-1px); }
+
+    .company-logo {
+      width: 52px; height: 52px; border-radius: 10px; object-fit: contain;
+      background: #1e2d45; flex-shrink: 0; padding: 6px;
+    }
+    .company-logo-fallback {
+      width: 52px; height: 52px; border-radius: 10px; background: linear-gradient(135deg, #1e3a5f, #1e2d45);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      font-size: 1.3rem; font-weight: 700; color: #60a5fa;
+    }
+
+    .job-info { flex: 1; min-width: 0; }
+    .job-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .job-company { color: #94a3b8; font-size: 0.9rem; margin-bottom: 6px; }
+    .job-meta { font-size: 0.82rem; color: #64748b; }
+    .job-meta i { margin-right: 4px; }
+    .job-reason { font-size: 0.85rem; color: #94a3b8; margin-top: 8px; font-style: italic; }
+
+    .score-badge {
+      flex-shrink: 0; width: 72px; text-align: center;
+    }
+    .score-circle {
+      width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 1.15rem; font-weight: 800; margin: 0 auto 6px; border: 3px solid;
+    }
+    .score-high   { border-color: #22c55e; color: #22c55e; background: rgba(34,197,94,0.1); }
+    .score-good   { border-color: #60a5fa; color: #60a5fa; background: rgba(96,165,250,0.1); }
+    .score-medium { border-color: #f59e0b; color: #f59e0b; background: rgba(245,158,11,0.1); }
+    .score-low    { border-color: #f87171; color: #f87171; background: rgba(248,113,113,0.1); }
+    .score-label  { font-size: 0.7rem; color: #64748b; }
+
+    .apply-btn {
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: white; border: none; padding: 7px 18px; border-radius: 8px;
+      font-size: 0.85rem; font-weight: 600; text-decoration: none; display: inline-block;
+      margin-top: 10px; transition: opacity 0.2s;
+    }
+    .apply-btn:hover { opacity: 0.85; color: white; }
+
+    .no-results { text-align: center; padding: 60px; color: #64748b; }
+    .rank-num { font-size: 0.75rem; color: #475569; margin-bottom: 4px; }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 600px) {
+      .job-card { flex-direction: column; }
+      .score-badge { display: flex; align-items: center; gap: 12px; width: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="container d-flex align-items-center justify-content-between">
+    <a href="/"><i class="fas fa-briefcase me-2"></i>PM Startup Job Finder</a>
+    <a href="/"><i class="fas fa-plus me-2"></i>New Search</a>
+  </div>
+</div>
+
+<div class="container pb-5">
+
+  {% if profile %}
+  <div class="profile-card">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <div class="profile-name">{{ profile.get('name', 'Candidate') }}</div>
+        <div class="profile-meta">
+          {{ profile.get('experience_years', '?') }} years experience &bull;
+          {{ profile.get('experience_level', '').title() }} level &bull;
+          {{ profile.get('summary', '') }}
+        </div>
+        <div class="mt-2">
+          {% for t in profile.get('target_titles', [])[:6] %}
+          <span class="skill-tag">{{ t }}</span>
+          {% endfor %}
+        </div>
+        <div class="mt-2">
+          {% for s in profile.get('skills', [])[:12] %}
+          <span class="vc-tag">{{ s }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="col-md-4 text-md-end mt-3 mt-md-0">
+        <div style="font-size:2.5rem;font-weight:800;color:#60a5fa">{{ jobs|length }}</div>
+        <div style="color:#64748b">top matches found</div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="results-header">
+    <h2>Top {{ jobs|length }} Series C/D PM Matches</h2>
+  </div>
+
+  <div class="filter-bar">
+    <input type="text" id="searchFilter" placeholder="Search title or company…" oninput="filterJobs()" style="flex:1;min-width:200px">
+    <select id="sourceFilter" onchange="filterJobs()">
+      <option value="">All Sources</option>
+      <option value="ashby">Ashby</option>
+      <option value="greenhouse">Greenhouse</option>
+      <option value="lever">Lever</option>
+    </select>
+    <select id="stageFilter" onchange="filterJobs()">
+      <option value="">All Stages</option>
+      <option value="Series C">Series C</option>
+      <option value="Series D">Series D</option>
+      <option value="Series B/C">Series B/C</option>
+      <option value="Series D+">Series D+</option>
+    </select>
+    <select id="scoreFilter" onchange="filterJobs()">
+      <option value="0">All Scores</option>
+      <option value="80">80+ (Excellent)</option>
+      <option value="60">60+ (Good)</option>
+      <option value="40">40+ (Fair)</option>
+    </select>
+  </div>
+
+  <div id="jobList">
+    {% for job in jobs %}
+    {% set sc = job.score | int %}
+    {% if sc >= 80 %}{% set cls = "score-high" %}{% set label = "Excellent" %}
+    {% elif sc >= 60 %}{% set cls = "score-good" %}{% set label = "Good" %}
+    {% elif sc >= 40 %}{% set cls = "score-medium" %}{% set label = "Fair" %}
+    {% else %}{% set cls = "score-low" %}{% set label = "Low" %}{% endif %}
+
+    <div class="job-card"
+         data-title="{{ job.title | lower }}"
+         data-company="{{ job.company | lower }}"
+         data-source="{{ job.source }}"
+         data-stage="{{ job.stage }}"
+         data-score="{{ sc }}">
+
+      <!-- Logo -->
+      {% if job.domain %}
+      <img src="https://logo.clearbit.com/{{ job.domain }}"
+           class="company-logo"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+           alt="{{ job.company }}">
+      <div class="company-logo-fallback" style="display:none">{{ job.company[0] | upper }}</div>
+      {% else %}
+      <div class="company-logo-fallback">{{ job.company[0] | upper }}</div>
+      {% endif %}
+
+      <!-- Info -->
+      <div class="job-info">
+        <div class="rank-num">#{{ loop.index }}</div>
+        <div class="job-title">{{ job.title }}</div>
+        <div class="job-company">
+          {{ job.company }}
+          {% if job.stage %}
+          <span class="stage-tag ms-1" title="Funding stage hint">{{ job.stage }}</span>
+          {% endif %}
+          {% if job.vc %}
+          <span class="vc-tag ms-1" title="Investor context"><i class="fas fa-seedling" style="color:#34d399;font-size:0.65rem"></i> {{ job.vc }}</span>
+          {% endif %}
+        </div>
+        <div class="job-meta">
+          {% if job.location %}<span><i class="fas fa-map-marker-alt"></i>{{ job.location }}</span> &nbsp;{% endif %}
+          <span style="text-transform:capitalize"><i class="fas fa-globe"></i>{{ job.source }}</span>
+          {% if job.source_note %}&nbsp; <span title="{{ job.source_note }}"><i class="fas fa-circle-info"></i> verify stage</span>{% endif %}
+        </div>
+        {% if job.reason %}
+        <div class="job-reason"><i class="fas fa-lightbulb" style="color:#f59e0b;margin-right:5px"></i>{{ job.reason }}</div>
+        {% endif %}
+        {% if job.url %}
+        <a href="{{ job.url }}" target="_blank" class="apply-btn">View &amp; Apply <i class="fas fa-external-link-alt ms-1" style="font-size:0.7rem"></i></a>
+        {% endif %}
+      </div>
+
+      <!-- Score -->
+      <div class="score-badge">
+        <div class="score-circle {{ cls }}">{{ sc }}</div>
+        <div class="score-label">{{ label }}</div>
+      </div>
+    </div>
+    {% endfor %}
+
+    {% if not jobs %}
+    <div class="no-results">
+      <i class="fas fa-search fa-3x mb-3" style="color:#334155"></i>
+      <h4>No jobs found</h4>
+      <p>Try again later, or broaden the company registry in <code>job_search/companies.py</code>. Public job boards can be temporarily unavailable.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+function filterJobs() {
+  const q = document.getElementById('searchFilter').value.toLowerCase();
+  const src = document.getElementById('sourceFilter').value;
+  const stage = document.getElementById('stageFilter').value;
+  const minScore = parseInt(document.getElementById('scoreFilter').value) || 0;
+
+  document.querySelectorAll('.job-card').forEach(card => {
+    const titleMatch = !q || card.dataset.title.includes(q) || card.dataset.company.includes(q);
+    const srcMatch = !src || card.dataset.source === src;
+    const stageMatch = !stage || card.dataset.stage === stage;
+    const scoreMatch = parseInt(card.dataset.score) >= minScore;
+    card.classList.toggle('hidden', !(titleMatch && srcMatch && stageMatch && scoreMatch));
+  });
+}
+</script>
+</body>
+</html>

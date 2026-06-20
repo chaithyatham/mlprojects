@@ -3,3 +3,13 @@ chromadb
 sentence-transformers
 pypdf
 flask
+requests
+pdfplumber
+python-docx
+scikit-learn
+beautifulsoup4
+pandas
+playwright
+pydantic
+PyYAML
+pytest

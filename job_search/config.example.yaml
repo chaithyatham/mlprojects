@@ -1,0 +1,47 @@
+target_roles:
+  - Director Product
+  - Senior Product Manager
+  - Principal Product Manager
+  - AI Platform
+  - Data Platform
+  - ML Infrastructure
+  - Data Products
+  - Data Governance
+  - Data Acquisition
+
+excluded_roles:
+  - Product Marketing Manager
+  - Product Operations
+  - Technical Program Manager
+  - Sales
+  - Support
+
+locations:
+  - Remote
+  - San Francisco
+  - New York
+  - Seattle
+
+seniority:
+  - Senior
+  - Principal
+  - Staff
+  - Director
+  - Head
+
+companies:
+  - name: Cohere
+    website: https://cohere.com
+    source: target-config
+  - name: Vanta
+    website: https://www.vanta.com
+    source: target-config
+
+vc_portfolio_urls:
+  - https://www.sequoiacap.com/companies/
+  - https://a16z.com/portfolio/
+
+max_companies_per_portfolio: 75
+strong_match_threshold: 75
+llm_model: claude-3-5-haiku-latest
+

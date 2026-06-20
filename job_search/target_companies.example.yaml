@@ -1,0 +1,8 @@
+companies:
+  - name: Databricks
+    website: https://www.databricks.com
+  - name: Confluent
+    website: https://www.confluent.io
+  - name: Pinecone
+    website: https://www.pinecone.io
+
