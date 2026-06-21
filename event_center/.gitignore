@@ -1,0 +1,4 @@
+event_center.db
+__pycache__/
+tests/__pycache__/
+.pytest_cache/

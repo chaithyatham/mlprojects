@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Willow Hall | Event Center{% endblock %}
+{% block content %}
+<main>
+  <section class="hero">
+    <img src="{{ url_for('static', filename='event-center-hero.png') }}" alt="Light-filled interior of Willow Hall event center">
+    <div class="hero-shade"></div>
+    <div class="hero-content">
+      <p class="eyebrow">Downtown event center</p>
+      <h1>Space for the moments<br>that matter.</h1>
+      <p class="hero-copy">A warm, flexible setting for celebrations, company gatherings, and community events of up to 350 guests.</p>
+      <div class="hero-actions">
+        <a class="button" href="{{ url_for('book') }}">Request your date</a>
+        <a class="text-link light-link" href="#spaces">Explore the venue <span>→</span></a>
+      </div>
+    </div>
+    <div class="hero-note">Available for daytime and evening events</div>
+  </section>
+
+  <section class="intro-band" id="spaces">
+    <p class="eyebrow">The right canvas</p>
+    <div class="intro-grid">
+      <h2>Room to gather,<br><em>made personal.</em></h2>
+      <p>Willow Hall is a light-filled, fully adaptable event space with an open floor plan, built-in hospitality areas, and the support to make your occasion feel effortless.</p>
+    </div>
+    <div class="stat-row">
+      <div><strong>350</strong><span>Guest capacity</span></div>
+      <div><strong>6,200</strong><span>Square feet</span></div>
+      <div><strong>7 days</strong><span>Weekly availability</span></div>
+    </div>
+  </section>
+
+  <section class="availability-band">
+    <div>
+      <p class="eyebrow">Plan with confidence</p>
+      <h2>One calendar.<br>No double bookings.</h2>
+    </div>
+    <p>Submit the date and time you need. We hold each request while it is under review, so the schedule stays clear and every approved event has its space.</p>
+    <a class="button button-dark" href="{{ url_for('book') }}">Check availability</a>
+  </section>
+
+  <section class="upcoming-section">
+    <div class="section-heading">
+      <p class="eyebrow">Confirmed calendar</p>
+      <h2>Upcoming at Willow Hall</h2>
+    </div>
+    {% if upcoming %}
+      <div class="upcoming-list">
+        {% for booking in upcoming %}
+          <article><span>{{ booking.event_date }}</span><strong>{{ booking.event_name }}</strong><span>{{ booking.start_time }}–{{ booking.end_time }}</span></article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty-state">Our first dates are ready to be claimed.</p>
+    {% endif %}
+  </section>
+</main>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Request Received | Willow Hall{% endblock %}
+{% block content %}
+<main class="confirmation-page">
+  <p class="eyebrow">Request received</p>
+  <h1>Your time is<br><em>held for review.</em></h1>
+  <p class="confirmation-copy">We have your request for <strong>{{ booking.event_name }}</strong> on {{ booking.event_date }} from {{ booking.start_time }} to {{ booking.end_time }}. We will review it and follow up at {{ booking.email }}.</p>
+  <div class="confirmation-details">
+    <span>Status</span><strong>Pending review</strong>
+    <span>Guests</span><strong>{{ booking.guest_count }}</strong>
+    <span>Reference</span><strong>{{ booking.id[:8] }}</strong>
+  </div>
+  <a class="button" href="{{ url_for('home') }}">Return to Willow Hall</a>
+</main>
+{% endblock %}

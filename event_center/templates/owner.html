@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Owner Portal | Willow Hall{% endblock %}
+{% block content %}
+<main class="owner-page">
+  <section class="owner-heading">
+    <div><p class="eyebrow">Owner portal</p><h1>Bookings at a glance.</h1></div>
+    <a class="button" href="{{ url_for('book') }}">New booking request</a>
+  </section>
+  <section class="metrics">
+    <div><span>Pending</span><strong>{{ counts.pending }}</strong></div>
+    <div><span>Approved</span><strong>{{ counts.approved }}</strong></div>
+    <div><span>Declined</span><strong>{{ counts.declined }}</strong></div>
+  </section>
+  <section class="owner-grid">
+    <div class="bookings-panel">
+      <div class="panel-header"><h2>Booking requests</h2><div class="filter-tabs">{% for label in ['pending', 'approved', 'declined', 'all'] %}<a class="{% if status_filter == label %}active{% endif %}" href="{{ url_for('owner_dashboard', status=label) }}">{{ label }}</a>{% endfor %}</div></div>
+      {% if bookings %}
+        <div class="booking-list">
+        {% for booking in bookings %}
+          <article class="booking-card">
+            <div class="booking-date"><strong>{{ booking.event_date }}</strong><span>{{ booking.start_time }}–{{ booking.end_time }}</span></div>
+            <div class="booking-main"><div class="booking-title"><h3>{{ booking.event_name }}</h3><span class="status status-{{ booking.status }}">{{ booking.status }}</span></div><p>{{ booking.event_type }} · {{ booking.guest_count }} guests · {{ booking.client_name }}</p><p class="contact">{{ booking.email }} · {{ booking.phone }}</p>{% if booking.notes %}<p class="notes">{{ booking.notes }}</p>{% endif %}</div>
+            {% if booking.status == 'pending' %}
+              <form class="decision-form" method="post" action="{{ url_for('booking_decision', booking_id=booking.id) }}"><input name="owner_note" placeholder="Optional note"><div><button class="button button-small" name="action" value="approved">Approve</button><button class="button button-small button-outline" name="action" value="declined">Decline</button></div></form>
+            {% elif booking.owner_note %}<p class="owner-note">{{ booking.owner_note }}</p>{% endif %}
+          </article>
+        {% endfor %}
+        </div>
+      {% else %}<p class="empty-state">No {{ status_filter }} bookings yet.</p>{% endif %}
+    </div>
+    <aside class="schedule-panel"><p class="eyebrow">Confirmed schedule</p><h2>Coming up</h2>{% if approved %}{% for booking in approved %}<article><span>{{ booking.event_date }}</span><strong>{{ booking.event_name }}</strong><small>{{ booking.start_time }}–{{ booking.end_time }}</small></article>{% endfor %}{% else %}<p class="empty-state">No confirmed events.</p>{% endif %}</aside>
+  </section>
+</main>
+{% endblock %}

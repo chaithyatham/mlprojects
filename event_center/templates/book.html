@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Request a Date | Willow Hall{% endblock %}
+{% block content %}
+<main class="booking-page">
+  <section class="booking-heading">
+    <p class="eyebrow">Date request</p>
+    <h1>Tell us about your event.</h1>
+    <p>We will hold your preferred time while we review the details. You will receive a confirmation after the request is approved.</p>
+  </section>
+  <section class="booking-layout">
+    <form class="booking-form" method="post" id="booking-form">
+      <fieldset>
+        <legend>Your details</legend>
+        <div class="field-grid">
+          <label>Full name<input required name="client_name" value="{{ form.get('client_name', '') }}" autocomplete="name"></label>
+          <label>Email<input required type="email" name="email" value="{{ form.get('email', '') }}" autocomplete="email"></label>
+        </div>
+        <label>Phone<input required type="tel" name="phone" value="{{ form.get('phone', '') }}" autocomplete="tel"></label>
+      </fieldset>
+      <fieldset>
+        <legend>Your event</legend>
+        <div class="field-grid">
+          <label>Event name<input required name="event_name" placeholder="e.g. Northwind summer dinner" value="{{ form.get('event_name', '') }}"></label>
+          <label>Event type
+            <select required name="event_type">
+              <option value="">Choose one</option>
+              {% for option in ['Celebration', 'Wedding', 'Corporate event', 'Nonprofit / community', 'Private dinner', 'Other'] %}
+                <option value="{{ option }}" {% if form.get('event_type') == option %}selected{% endif %}>{{ option }}</option>
+              {% endfor %}
+            </select>
+          </label>
+        </div>
+        <label>Estimated guests<input required min="1" max="350" type="number" name="guest_count" value="{{ form.get('guest_count', '') }}"></label>
+      </fieldset>
+      <fieldset>
+        <legend>Preferred time</legend>
+        <label>Event date<input required min="{{ today }}" type="date" name="event_date" id="event-date" value="{{ form.get('event_date', '') }}"></label>
+        <div class="field-grid">
+          <label>Start time<input required type="time" name="start_time" id="start-time" value="{{ form.get('start_time', '') }}"></label>
+          <label>End time<input required type="time" name="end_time" id="end-time" value="{{ form.get('end_time', '') }}"></label>
+        </div>
+        <p class="availability-message" id="availability-message" aria-live="polite">Choose a date and time to check the schedule.</p>
+      </fieldset>
+      <fieldset>
+        <legend>Anything else?</legend>
+        <label>Notes<textarea name="notes" rows="4" placeholder="Catering, set-up needs, or anything we should know">{{ form.get('notes', '') }}</textarea></label>
+      </fieldset>
+      <button class="button" type="submit" id="submit-button">Submit booking request</button>
+    </form>
+    <aside class="booking-aside">
+      <p class="eyebrow">What happens next</p>
+      <ol>
+        <li><span>01</span><div><strong>We hold your time</strong><p>Your requested time is protected from overlapping bookings while it is pending.</p></div></li>
+        <li><span>02</span><div><strong>We review your event</strong><p>We confirm event details, space needs, and your final quote.</p></div></li>
+        <li><span>03</span><div><strong>You receive a decision</strong><p>Once approved, your event is placed on the confirmed calendar.</p></div></li>
+      </ol>
+    </aside>
+  </section>
+</main>
+<script>
+  const inputs = ['event-date', 'start-time', 'end-time'].map((id) => document.getElementById(id));
+  const message = document.getElementById('availability-message');
+  const submitButton = document.getElementById('submit-button');
+  let timer;
+  async function checkAvailability() {
+    const [date, start, end] = inputs.map((input) => input.value);
+    if (!date || !start || !end || start >= end) return;
+    message.textContent = 'Checking availability...';
+    message.className = 'availability-message checking';
+    const params = new URLSearchParams({date, start, end});
+    const response = await fetch(`/api/availability?${params}`);
+    const data = await response.json();
+    message.textContent = data.message;
+    message.className = `availability-message ${data.available ? 'available' : 'unavailable'}`;
+    submitButton.disabled = !data.available;
+  }
+  inputs.forEach((input) => input.addEventListener('change', () => {
+    clearTimeout(timer); timer = setTimeout(checkAvailability, 160);
+  }));
+</script>
+{% endblock %}
